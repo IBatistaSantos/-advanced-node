@@ -14,10 +14,10 @@ export class FacebookAuthenticationService {
     const fbData = await this.facebookApi.loadUser({ token: params.token })
 
     if (fbData !== undefined) {
-      const accountData = await this.userAccountRepository.load({ email: fbData?.email })
-      const facebookAccount = new FacebookAccount(fbData, accountData)
+      const accountData = await this.userAccountRepository.load({ email: fbData.email })
+      const fbAccount = new FacebookAccount(fbData, accountData)
 
-      await this.userAccountRepository.saveWithFacebook(facebookAccount)
+      await this.userAccountRepository.saveWithFacebook(fbAccount)
     }
     return new AuthenticationError()
   }
