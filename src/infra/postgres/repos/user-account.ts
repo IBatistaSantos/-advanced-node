@@ -2,7 +2,7 @@ import { LoadUserAccountRepository, SaveFacebookAccountRepository } from '@/data
 import { getConnection } from 'typeorm'
 import PgUser from '../entities/user'
 
-export default class PgUserAccountRepository implements LoadUserAccountRepository {
+export default class PgUserAccountRepository implements LoadUserAccountRepository, SaveFacebookAccountRepository {
   private readonly pgUserRepo = getConnection().getRepository(PgUser)
 
   async saveWithFacebook (params: SaveFacebookAccountRepository.Params): Promise<SaveFacebookAccountRepository.Result> {
