@@ -9,6 +9,12 @@ describe('Pg', () => {
       const account = await sut.load({ email: 'existing_email' })
       expect(account).toEqual({ id: '1' })
     })
+
+    it('should return undefined if email not exists', async () => {
+      const sut = new PgUserAccountRepository()
+      const account = await sut.load({ email: 'not_existing_email' })
+      expect(account).toBeUndefined()
+    })
   })
 })
 
@@ -26,6 +32,7 @@ class PgUserAccountRepository implements LoadUserAccountRepository {
     const pgUser = await pgUserRepo.findOne({ where: { email: params.email } })
 
     if (pgUser !== undefined) {
+      await connection.close()
       return {
         id: pgUser.id.toString(),
         name: pgUser.name ?? undefined
