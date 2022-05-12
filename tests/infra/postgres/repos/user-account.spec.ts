@@ -12,6 +12,7 @@ describe('PgUserAccount', () => {
   let backup: IBackup
 
   beforeEach(() => {
+    backup.restore()
     sut = new PgUserAccountRepository()
   })
 
@@ -22,7 +23,6 @@ describe('PgUserAccount', () => {
   })
 
   afterAll(async () => {
-    backup.restore()
     await getConnection().close()
   })
   describe('load', () => {
@@ -42,7 +42,7 @@ describe('PgUserAccount', () => {
 
   describe('saveWithFacebook', () => {
     it('should create ab account if id is undefined', async () => {
-      await sut.saveWithFacebook({
+      const { id } = await sut.saveWithFacebook({
         email: 'existing_email',
         name: 'any_name',
         facebookId: 'any_fb_id'
@@ -51,6 +51,7 @@ describe('PgUserAccount', () => {
       const pgUser = await pgUserRepo.findOne({ where: { email: 'existing_email' } })
 
       expect(pgUser?.id).toBe(1)
+      expect(id).toBe('1')
     })
 
     it('should update ab account if id is defined', async () => {
@@ -60,7 +61,7 @@ describe('PgUserAccount', () => {
         facebookId: 'any_fb_id'
       })
 
-      await sut.saveWithFacebook({
+      const { id } = await sut.saveWithFacebook({
         id: '1',
         email: 'new_email',
         name: 'new_name',
@@ -75,6 +76,7 @@ describe('PgUserAccount', () => {
         name: 'new_name',
         facebookId: 'new_fb_id'
       })
+      expect(id).toBe('1')
     })
   })
 })
