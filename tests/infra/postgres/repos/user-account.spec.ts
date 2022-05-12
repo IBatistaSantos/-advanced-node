@@ -2,10 +2,9 @@
 import PgUser from '@/infra/postgres/entities/user'
 import PgUserAccountRepository from '@/infra/postgres/repos/user-account'
 
-import { IMemoryDb, newDb, IBackup } from 'pg-mem'
-import { getConnection, Repository, Connection } from 'typeorm'
-
-let connection: Connection
+import { IBackup } from 'pg-mem'
+import { getConnection, Repository } from 'typeorm'
+import { makeFakeDb } from '../mocks'
 
 describe('PgUserAccount', () => {
   describe('load', () => {
@@ -20,7 +19,7 @@ describe('PgUserAccount', () => {
     beforeAll(async () => {
       const db = await makeFakeDb([PgUser])
       backup = db.backup()
-      pgUserRepo = connection.getRepository(PgUser)
+      pgUserRepo = getConnection().getRepository(PgUser)
     })
 
     afterAll(async () => {
@@ -42,15 +41,3 @@ describe('PgUserAccount', () => {
     })
   })
 })
-
-const makeFakeDb = async (entities?: any[]): Promise<IMemoryDb> => {
-  const db = newDb()
-  connection = await db.adapters.createTypeormConnection({
-    type: 'postgres',
-    entities: entities ?? ['src/infra/postgres/entities/index.ts']
-  })
-
-  await connection.synchronize()
-
-  return db
-}
