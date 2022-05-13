@@ -1,11 +1,11 @@
 import { FacebookAuthentication } from '@/domain/features'
-import { mock } from 'jest-mock-extended'
+import { mock, MockProxy } from 'jest-mock-extended'
 
 describe('FacebookLoginController', () => {
-  let facebookAuth: FacebookAuthentication
+  let facebookAuth: MockProxy<FacebookAuthentication>
   let sut: FacebookLoginController
   beforeAll(() => {
-    facebookAuth = mock<FacebookAuthentication>()
+    facebookAuth = mock()
   })
 
   beforeEach(() => {
