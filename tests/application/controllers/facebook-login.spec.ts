@@ -61,30 +61,47 @@ describe('FacebookLoginController', () => {
       }
     })
   })
+
+  it('should return 500 if authentication throws', async () => {
+    const error = new Error('infra error')
+    facebookAuth.perform.mockRejectedValueOnce(error)
+    const httpResponse = await sut.handle({ token: 'any_token' })
+    expect(httpResponse).toEqual({
+      statusCode: 500,
+      data: new ServerError(error)
+    })
+  })
 })
 
 class FacebookLoginController {
   constructor (private readonly facebookAuthentication: FacebookAuthentication) {}
   async handle (httpRequest: any): Promise<HttpResponse> {
-    if (httpRequest.token === '' || httpRequest.token === undefined || httpRequest.token === null) {
-      return {
-        statusCode: 400,
-        data: new Error('The field token is required')
-      }
-    }
-    const result = await this.facebookAuthentication.perform({ token: httpRequest.token })
-
-    if (result instanceof AccessToken) {
-      return {
-        statusCode: 200,
-        data: {
-          accessToken: result.value
+    try {
+      if (httpRequest.token === '' || httpRequest.token === undefined || httpRequest.token === null) {
+        return {
+          statusCode: 400,
+          data: new Error('The field token is required')
         }
       }
-    } else {
+      const result = await this.facebookAuthentication.perform({ token: httpRequest.token })
+
+      if (result instanceof AccessToken) {
+        return {
+          statusCode: 200,
+          data: {
+            accessToken: result.value
+          }
+        }
+      } else {
+        return {
+          statusCode: 401,
+          data: result
+        }
+      }
+    } catch (error) {
       return {
-        statusCode: 401,
-        data: result
+        statusCode: 500,
+        data: new ServerError(error as Error)
       }
     }
   }
@@ -93,4 +110,12 @@ class FacebookLoginController {
 type HttpResponse = {
   statusCode: number
   data: any
+}
+
+class ServerError extends Error {
+  constructor (error?: Error) {
+    super('Server failded. Try again soon')
+    this.name = 'ServerError'
+    this.stack = error?.stack
+  }
 }
