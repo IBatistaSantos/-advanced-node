@@ -33,6 +33,15 @@ describe('ValidationComposite', () => {
 
     expect(error).toEqual(new Error('error_1'))
   })
+
+  it('should return the error', () => {
+    validatorTwo.validate.mockReturnValueOnce(new Error('error_2'))
+
+    sut = new ValidationComposite(validators)
+    const error = sut.validate()
+
+    expect(error).toEqual(new Error('error_2'))
+  })
 })
 
 interface Validator {
