@@ -7,11 +7,11 @@ describe('Facebook Api Integration Tests', () => {
   let token: string
 
   beforeAll(() => {
-    axiosClient = new AxiosHttpClient()
     token = 'EAAU4GeuDoZCkBAK433dV89O9WLPjeMtVv4X4d2L4PIwXjqukapsIiEK2wAdxDZAUKBzpEAWNRK2XV9ZBbzIeMN1E2YAxWAHmuNNpvZBZBoS53pdoQyIY26BmfDjKyHCUIexDTOIG6ZBI0jt9ZAgM6sOxXtQG4MvEuuz1ZCMP3G5f6eWI8fLcUknCzOXDKzhAz22Yvyx632PvMQZDZD'
   })
 
   beforeEach(() => {
+    axiosClient = new AxiosHttpClient()
     sut = new FacebookApi(axiosClient, env.facebookApi.clientId, env.facebookApi.clientSecret)
   })
 
